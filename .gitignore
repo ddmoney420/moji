@@ -1,0 +1,9 @@
+moji
+*.exe
+coverage.out
+dist/
+*.gif
+*.png
+*.svg
+web/wasm/moji.wasm
+web/js/wasm_exec.js

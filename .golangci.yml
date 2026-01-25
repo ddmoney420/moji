@@ -1,0 +1,52 @@
+run:
+  timeout: 3m
+
+linters:
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - gosimple
+    - misspell
+    - gofmt
+
+linters-settings:
+  errcheck:
+    exclude-functions:
+      - fmt.Fprintf
+      - fmt.Fprintln
+      - (encoding/json.Encoder).Encode
+      - (*encoding/json.Encoder).Encode
+      - (*github.com/spf13/cobra.Command).Help
+      - (*github.com/spf13/cobra.Command).GenBashCompletion
+      - (*github.com/spf13/cobra.Command).GenZshCompletion
+      - (*github.com/spf13/cobra.Command).GenFishCompletion
+      - (*github.com/spf13/cobra.Command).GenPowerShellCompletionWithDesc
+
+  misspell:
+    locale: US
+
+issues:
+  exclude-rules:
+    # Deprecated rand.Seed - harmless in CLI tools
+    - text: "SA1019.*rand.Seed"
+      linters:
+        - staticcheck
+    # Allow large functions in demo
+    - path: demo/demo\.go
+      linters:
+        - gocritic
+    # fmt.Sscanf return values in sysinfo (best effort parsing)
+    - path: sysinfo/sysinfo\.go
+      text: "fmt.Sscanf"
+      linters:
+        - errcheck
+    # fmt.Sscanf in export (parsing hex colors)
+    - path: export/export\.go
+      text: "fmt.Sscanf"
+      linters:
+        - errcheck
+  max-issues-per-linter: 50
+  max-same-issues: 10

@@ -1,0 +1,65 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go test ./...
+
+builds:
+  - main: .
+    binary: moji
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/ddmoney420/moji/internal/ux.Version={{.Version}}
+      - -X github.com/ddmoney420/moji/internal/ux.BuildDate={{.Date}}
+      - -X github.com/ddmoney420/moji/internal/ux.GitCommit={{.ShortCommit}}
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^ci:"
+      - "^chore:"
+
+brews:
+  - repository:
+      owner: ddmoney420
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: Formula
+    homepage: "https://github.com/ddmoney420/moji"
+    description: "Terminal art toolkit - kaomoji, ASCII banners, filters, QR codes, and more"
+    license: "MIT"
+    install: |
+      bin.install "moji"
+    test: |
+      assert_match "moji", shell_output("#{bin}/moji --version")
+
+release:
+  github:
+    owner: ddmoney420
+    name: moji
+  draft: false
+  prerelease: auto
+  name_template: "v{{.Version}}"

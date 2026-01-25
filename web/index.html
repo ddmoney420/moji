@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>moji - Terminal art toolkit for Go</title>
+  <meta name="description" content="Terminal art toolkit for Go. 170+ kaomoji, 47 FIGlet fonts, 20 text effects, 23 filters, gradients, QR codes, image-to-ASCII, patterns, and more. Try live in the browser.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav">
+  <a href="#" class="nav-brand">moji</a>
+  <ul class="nav-links">
+    <li><a href="#features">Features</a></li>
+    <li><a href="#examples">Examples</a></li>
+    <li><a href="#install">Install</a></li>
+    <li><a href="#playground">Playground</a></li>
+    <li><a href="https://github.com/ddmoney420/moji" target="_blank">GitHub</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+  <pre class="hero-ascii" id="hero-ascii" aria-label="moji ASCII art">
+                    _  _
+ _ __ ___   ___   (_)(_)
+| '_ ` _ \ / _ \  | || |
+| | | | | | (_) | | || |
+|_| |_| |_|\___/  | ||_|
+                  _/ |
+                 |__/
+  </pre>
+  <div class="hero-kaomoji" id="hero-kaomoji"></div>
+  <p class="hero-tagline">Terminal art toolkit for Go. 170+ kaomoji, 47 FIGlet fonts, 20 text effects, 23 filters, gradients, QR codes, image-to-ASCII, and more.</p>
+  <div class="hero-cta">
+    <a href="#playground" class="btn btn-primary">Try it live</a>
+    <a href="#install" class="btn btn-secondary">Install</a>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section" id="features">
+  <h2 class="section-title">Features</h2>
+  <p class="section-subtitle">Everything you need to make your terminal output beautiful. 13 feature categories and counting.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <h3>Kaomoji</h3>
+      <p>170+ emoticons organized by category. Search, browse, or get a random one.</p>
+      <div class="feature-example">(&#x2565;&#x203F;&#x2565;)  (&#xFF89;&#x25D5;&#x30EE;&#x25D5;)&#xFF89;*:&#xFF65;&#xFF9F;&#x2727;  &#x0CA5;_&#x0CA5;</div>
+    </div>
+    <div class="feature-card">
+      <h3>Banners</h3>
+      <p>ASCII art text with 47 FIGlet fonts. From retro to modern styles.</p>
+      <div class="feature-example"> _   _      _ _
+| | | | ___| | | ___
+| |_| |/ _ \ | |/ _ \
+|  _  |  __/ | | (_) |
+|_| |_|\___|_|_|\___/ </div>
+    </div>
+    <div class="feature-card">
+      <h3>Effects</h3>
+      <p>20 Unicode text effects: flip, zalgo, bubble, bold, script, fraktur, and more.</p>
+      <div class="feature-example">&#x24BD;&#x24D4;&#x24D9;&#x24D9;&#x24DE;  &#x2728;Hello&#x2728;  &#x029C;&#x1D07;&#x029F;&#x029F;&#x1D0F;</div>
+    </div>
+    <div class="feature-card">
+      <h3>Filters</h3>
+      <p>23 ANSI color filters: rainbow, matrix, fire, ice, neon, and more.</p>
+      <div class="feature-example">Apply colorful ANSI effects
+to any text or banner output</div>
+    </div>
+    <div class="feature-card">
+      <h3>Gradients</h3>
+      <p>12 color themes with horizontal, vertical, and diagonal modes.</p>
+      <div class="feature-example">Rainbow | Neon | Sunset
+Fire | Ice | Vaporwave</div>
+    </div>
+    <div class="feature-card">
+      <h3>QR Codes</h3>
+      <p>Generate QR codes in 9 character sets, right in your terminal.</p>
+      <div class="feature-example">&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588; &#x2588;&#x2588; &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;
+&#x2588;     &#x2588; &#x2588;  &#x2588;     &#x2588;
+&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588; &#x2588; &#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;&#x2588;</div>
+    </div>
+    <div class="feature-card">
+      <h3>Styles</h3>
+      <p>18 color styles with borders and alignment. Rainbow, cyberpunk, galaxy, and more.</p>
+      <div class="feature-example">Rainbow | Neon | Cyberpunk
+Galaxy | Gold | Vaporwave</div>
+    </div>
+    <div class="feature-card">
+      <h3>Speech Bubbles</h3>
+      <p>Wrap text in speech or thought bubbles with 6 styles. Combine with ASCII art.</p>
+      <div class="feature-example"> ___________
+( Hello!    )
+ -----------
+        \   ^__^
+         \  (oo)\_______</div>
+    </div>
+    <div class="feature-card">
+      <h3>ASCII Art</h3>
+      <p>Browse a curated database of ASCII art. Animals, symbols, nature, objects, and more.</p>
+      <div class="feature-example">   /\_/\
+  ( o.o )
+   > ^ <</div>
+    </div>
+    <div class="feature-card">
+      <h3>Calendar</h3>
+      <p>Terminal calendars with month, year, and week views. Highlights today's date.</p>
+      <div class="feature-example">   January 2026
+Su Mo Tu We Th Fr Sa
+             1  2  3
+ 4  5  6  7  8  9 10</div>
+    </div>
+    <div class="feature-card">
+      <h3>Image Convert</h3>
+      <p>Convert images to ASCII art with 24 charsets. Edge detection, color mode, and multiple protocols.</p>
+      <div class="feature-example">moji convert photo.jpg
+moji convert --color --width 100
+moji convert --charset braille</div>
+    </div>
+    <div class="feature-card">
+      <h3>Patterns</h3>
+      <p>10 border styles and 7 divider styles. Frame your text with single, double, round, shadow, and more.</p>
+      <div class="feature-example">&#x250C;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2510;
+&#x2502; Hello World &#x2502;
+&#x2514;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2500;&#x2518;</div>
+    </div>
+    <div class="feature-card">
+      <h3>Chain</h3>
+      <p>Combine effects: add a gradient, wrap in a border, apply effects, and bubble - all at once.</p>
+      <div class="feature-example">gradient + border + effect
+= composable pipeline</div>
+    </div>
+  </div>
+</section>
+
+<!-- Examples -->
+<section class="section" id="examples">
+  <h2 class="section-title">Examples</h2>
+  <p class="section-subtitle">See what moji can do from the command line.</p>
+  <div class="examples-list">
+    <div class="example-item">
+      <div class="example-cmd">
+        <span class="prompt">$</span> moji get shrug
+      </div>
+      <div class="example-output">&#x00AF;\_(&#x30C4;)_/&#x00AF;</div>
+    </div>
+    <div class="example-item">
+      <div class="example-cmd">
+        <span class="prompt">$</span> moji banner "Hi" --font doom
+      </div>
+      <div class="example-output"> _   _ _
+| | | (_)
+| |_| |_
+|  _  | |
+|_| |_|_|</div>
+    </div>
+    <div class="example-item">
+      <div class="example-cmd">
+        <span class="prompt">$</span> moji effect bubble "hello"
+      </div>
+      <div class="example-output">&#x24BD;&#x24D4;&#x24D9;&#x24D9;&#x24DE;</div>
+    </div>
+    <div class="example-item">
+      <div class="example-cmd">
+        <span class="prompt">$</span> moji gradient "rainbow text" --theme rainbow
+      </div>
+      <div class="example-output">Renders colorful gradient text in terminal</div>
+    </div>
+    <div class="example-item">
+      <div class="example-cmd">
+        <span class="prompt">$</span> moji say "Hello!" --character kermit
+      </div>
+      <div class="example-output">Speech bubble with ASCII art character</div>
+    </div>
+    <div class="example-item">
+      <div class="example-cmd">
+        <span class="prompt">$</span> moji qr "https://github.com" --charset braille
+      </div>
+      <div class="example-output">Generates a QR code using braille characters</div>
+    </div>
+  </div>
+</section>
+
+<!-- Install -->
+<section class="section" id="install">
+  <h2 class="section-title">Install</h2>
+  <p class="section-subtitle">Get moji on your system.</p>
+  <div class="install-tabs">
+    <button class="install-tab active" data-tab="homebrew">Homebrew</button>
+    <button class="install-tab" data-tab="go">Go</button>
+    <button class="install-tab" data-tab="binary">Binary</button>
+    <button class="install-tab" data-tab="source">Source</button>
+  </div>
+  <div class="install-content active" id="install-homebrew">
+    <code>brew install ddmoney420/tap/moji</code>
+    <button class="copy-btn" data-copy="brew install ddmoney420/tap/moji">Copy</button>
+  </div>
+  <div class="install-content" id="install-go">
+    <code>go install github.com/ddmoney420/moji@latest</code>
+    <button class="copy-btn" data-copy="go install github.com/ddmoney420/moji@latest">Copy</button>
+  </div>
+  <div class="install-content" id="install-binary">
+    <code># Download from GitHub Releases
+# https://github.com/ddmoney420/moji/releases</code>
+    <button class="copy-btn" data-copy="# https://github.com/ddmoney420/moji/releases">Copy</button>
+  </div>
+  <div class="install-content" id="install-source">
+    <code>git clone https://github.com/ddmoney420/moji.git
+cd moji
+make install</code>
+    <button class="copy-btn" data-copy="git clone https://github.com/ddmoney420/moji.git && cd moji && make install">Copy</button>
+  </div>
+</section>
+
+<!-- Playground -->
+<section class="playground-section" id="playground">
+  <h2 class="section-title">Playground</h2>
+  <p class="section-subtitle">Try moji live in your browser. Powered by WebAssembly. Copy or save as image.</p>
+
+  <div class="playground-tabs">
+    <button class="playground-tab active" data-pg="kaomoji">Kaomoji</button>
+    <button class="playground-tab" data-pg="banner">Banner</button>
+    <button class="playground-tab" data-pg="effects">Effects</button>
+    <button class="playground-tab" data-pg="filters">Filters</button>
+    <button class="playground-tab" data-pg="gradient">Gradient</button>
+    <button class="playground-tab" data-pg="styles">Styles</button>
+    <button class="playground-tab" data-pg="qr">QR</button>
+    <button class="playground-tab" data-pg="patterns">Patterns</button>
+    <button class="playground-tab" data-pg="speech">Speech</button>
+    <button class="playground-tab" data-pg="art">Art</button>
+
+    <button class="playground-tab" data-pg="calendar">Calendar</button>
+    <button class="playground-tab" data-pg="chain">Chain</button>
+  </div>
+
+  <div class="playground-container">
+    <div class="playground-input">
+      <!-- Kaomoji Panel -->
+      <div class="playground-panel active" id="pg-kaomoji">
+        <div>
+          <label for="kaomoji-search">Search</label>
+          <input type="text" id="kaomoji-search" placeholder="happy, sad, love...">
+        </div>
+        <div>
+          <label for="kaomoji-category">Category</label>
+          <select id="kaomoji-category">
+            <option value="">All</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" id="kaomoji-random" style="font-size:0.8rem;padding:0.5rem">Random</button>
+      </div>
+
+      <!-- Banner Panel -->
+      <div class="playground-panel" id="pg-banner">
+        <div>
+          <label for="banner-text">Text</label>
+          <input type="text" id="banner-text" placeholder="Hello" value="Hello">
+        </div>
+        <div>
+          <label for="banner-font">Font</label>
+          <select id="banner-font">
+            <option value="standard">Standard</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Effects Panel -->
+      <div class="playground-panel" id="pg-effects">
+        <div>
+          <label for="effects-text">Text</label>
+          <input type="text" id="effects-text" placeholder="Hello World" value="Hello World">
+        </div>
+        <div>
+          <label for="effects-type">Effect</label>
+          <select id="effects-type">
+            <option value="bubble">Bubble</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Filters Panel -->
+      <div class="playground-panel" id="pg-filters">
+        <div>
+          <label for="filters-text">Text</label>
+          <textarea id="filters-text" placeholder="Enter text...">Hello World</textarea>
+        </div>
+        <div>
+          <label for="filters-type">Filter</label>
+          <select id="filters-type">
+            <option value="rainbow">Rainbow</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Gradient Panel -->
+      <div class="playground-panel" id="pg-gradient">
+        <div>
+          <label for="gradient-text">Text</label>
+          <textarea id="gradient-text" placeholder="Enter text...">Hello World</textarea>
+        </div>
+        <div>
+          <label for="gradient-theme">Theme</label>
+          <select id="gradient-theme">
+            <option value="rainbow">Rainbow</option>
+          </select>
+        </div>
+        <div>
+          <label for="gradient-mode">Mode</label>
+          <select id="gradient-mode">
+            <option value="horizontal">Horizontal</option>
+            <option value="vertical">Vertical</option>
+            <option value="diagonal">Diagonal</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- QR Panel -->
+      <div class="playground-panel" id="pg-qr">
+        <div>
+          <label for="qr-text">Text / URL</label>
+          <input type="text" id="qr-text" placeholder="https://example.com" value="https://github.com">
+        </div>
+        <div>
+          <label for="qr-charset">Charset</label>
+          <select id="qr-charset">
+            <option value="blocks">Blocks</option>
+            <option value="shaded">Shaded</option>
+            <option value="dots">Dots</option>
+            <option value="ascii">ASCII</option>
+            <option value="braille">Braille</option>
+            <option value="compact">Compact</option>
+            <option value="inverse">Inverse</option>
+            <option value="minimal">Minimal</option>
+            <option value="half">Half</option>
+          </select>
+        </div>
+        <div>
+          <label><input type="checkbox" id="qr-invert"> Invert colors</label>
+        </div>
+        <div>
+          <label><input type="checkbox" id="qr-compact-mode"> Compact mode (half-block)</label>
+        </div>
+      </div>
+
+      <!-- Patterns Panel -->
+      <div class="playground-panel" id="pg-patterns">
+        <div>
+          <label for="patterns-text">Text</label>
+          <textarea id="patterns-text" placeholder="Enter text...">Hello World</textarea>
+        </div>
+        <div>
+          <label for="patterns-border">Border Style</label>
+          <select id="patterns-border">
+            <option value="single">Single</option>
+            <option value="double">Double</option>
+            <option value="round">Round</option>
+            <option value="thick">Thick</option>
+            <option value="ascii">ASCII</option>
+            <option value="stars">Stars</option>
+            <option value="dots">Dots</option>
+            <option value="blocks">Blocks</option>
+            <option value="shadow">Shadow</option>
+            <option value="fancy">Fancy</option>
+          </select>
+        </div>
+        <div>
+          <label for="patterns-divider">Divider Style</label>
+          <select id="patterns-divider">
+            <option value="">None (border only)</option>
+            <option value="single">Single</option>
+            <option value="double">Double</option>
+            <option value="wavy">Wavy</option>
+            <option value="stars">Stars</option>
+            <option value="hearts">Hearts</option>
+            <option value="sparkle">Sparkle</option>
+          </select>
+        </div>
+        <div>
+          <label for="patterns-preset">Pattern Preset</label>
+          <select id="patterns-preset">
+            <option value="">None</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Styles Panel -->
+      <div class="playground-panel" id="pg-styles">
+        <div>
+          <label for="styles-text">Text</label>
+          <textarea id="styles-text" placeholder="Enter text...">Hello World</textarea>
+        </div>
+        <div>
+          <label for="styles-type">Style</label>
+          <select id="styles-type">
+            <option value="rainbow">Rainbow</option>
+          </select>
+        </div>
+        <div>
+          <label for="styles-border">Border</label>
+          <select id="styles-border">
+            <option value="">None</option>
+          </select>
+        </div>
+        <div>
+          <label for="styles-align">Alignment</label>
+          <select id="styles-align">
+            <option value="">None</option>
+            <option value="left">Left</option>
+            <option value="center">Center</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Speech Panel -->
+      <div class="playground-panel" id="pg-speech">
+        <div>
+          <label for="speech-text">Text</label>
+          <textarea id="speech-text" placeholder="Enter text...">Hello World!</textarea>
+        </div>
+        <div>
+          <label for="speech-style">Bubble Style</label>
+          <select id="speech-style">
+            <option value="round">Round</option>
+            <option value="square">Square</option>
+            <option value="double">Double</option>
+            <option value="thick">Thick</option>
+            <option value="ascii">ASCII</option>
+            <option value="think">Think</option>
+          </select>
+        </div>
+        <div>
+          <label for="speech-width">Max Width</label>
+          <input type="number" id="speech-width" value="40" min="10" max="120">
+        </div>
+        <div>
+          <label for="speech-art">Combine with Art</label>
+          <select id="speech-art">
+            <option value="">None</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Art Panel -->
+      <div class="playground-panel" id="pg-art">
+        <div>
+          <label for="art-search">Search</label>
+          <input type="text" id="art-search" placeholder="cat, heart, star...">
+        </div>
+        <div>
+          <label for="art-category">Category</label>
+          <select id="art-category">
+            <option value="">All</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" id="art-random" style="font-size:0.8rem;padding:0.5rem">Random Art</button>
+      </div>
+
+
+      <!-- Calendar Panel -->
+      <div class="playground-panel" id="pg-calendar">
+        <div>
+          <label for="calendar-view">View</label>
+          <select id="calendar-view">
+            <option value="current">Current Month</option>
+            <option value="month">Specific Month</option>
+            <option value="year">Full Year</option>
+            <option value="week">This Week</option>
+            <option value="today">Today</option>
+            <option value="art">ASCII Art Date</option>
+          </select>
+        </div>
+        <div>
+          <label for="calendar-year">Year</label>
+          <input type="number" id="calendar-year" value="2026" min="1900" max="2100">
+        </div>
+        <div>
+          <label for="calendar-month">Month</label>
+          <select id="calendar-month">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+        </div>
+        <div>
+          <label><input type="checkbox" id="calendar-monday"> Week starts Monday</label>
+        </div>
+      </div>
+
+      <!-- Chain Panel -->
+      <div class="playground-panel" id="pg-chain">
+        <div>
+          <label for="chain-text">Text</label>
+          <textarea id="chain-text" placeholder="Enter text...">Hello World</textarea>
+        </div>
+        <div>
+          <label for="chain-effect">Effect</label>
+          <select id="chain-effect">
+            <option value="">None</option>
+          </select>
+        </div>
+        <div>
+          <label for="chain-gradient">Gradient</label>
+          <select id="chain-gradient">
+            <option value="">None</option>
+          </select>
+        </div>
+        <div>
+          <label for="chain-border">Border</label>
+          <select id="chain-border">
+            <option value="">None</option>
+          </select>
+        </div>
+        <div>
+          <label for="chain-bubble">Bubble</label>
+          <select id="chain-bubble">
+            <option value="">None</option>
+            <option value="round">Round</option>
+            <option value="square">Square</option>
+            <option value="double">Double</option>
+            <option value="thick">Thick</option>
+            <option value="ascii">ASCII</option>
+            <option value="think">Think</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="playground-output-wrap">
+      <div class="playground-output" id="playground-output">
+        <div class="playground-skeleton" id="playground-skeleton">
+          <div class="skeleton-line" style="width:60%"></div>
+          <div class="skeleton-line" style="width:80%"></div>
+          <div class="skeleton-line" style="width:45%"></div>
+          <div class="skeleton-line" style="width:70%"></div>
+          <div class="skeleton-line" style="width:55%"></div>
+          <div class="skeleton-text">Loading WASM engine...</div>
+        </div>
+      </div>
+      <div class="playground-toolbar">
+        <span class="playground-dims" id="pg-dims" title="Output dimensions (cols x rows)">0 x 0</span>
+        <div class="playground-toolbar-controls">
+          <label class="toolbar-control" title="Wrap long lines">
+            <input type="checkbox" id="pg-wrap"> wrap
+          </label>
+          <label class="toolbar-control" title="Output font size">
+            <input type="range" id="pg-fontsize" min="8" max="18" value="13" step="1">
+            <span id="pg-fontsize-val">13</span>px
+          </label>
+        </div>
+      </div>
+      <div class="playground-actions">
+        <button id="pg-copy">Copy Output</button>
+        <button id="pg-save-image">Save Image</button>
+        <button id="pg-cli-toggle">Show CLI Command</button>
+      </div>
+      <div class="playground-cli" id="pg-cli-display"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>
+    <a href="https://github.com/ddmoney420/moji">GitHub</a> &middot;
+    MIT License &middot;
+    Built with Go + WASM
+  </p>
+</footer>
+
+<script src="js/wasm_exec.js"></script>
+<script src="js/ansi-to-html.js"></script>
+<script src="js/bridge.js"></script>
+<script src="js/playground.js"></script>
+<script src="js/landing.js"></script>
+</body>
+</html>
