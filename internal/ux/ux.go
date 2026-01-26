@@ -8,10 +8,10 @@ import (
 	"golang.org/x/term"
 )
 
-// Version information
+// Version information (set via ldflags or defaults)
 var (
-	Version   = "1.0.0"
-	BuildDate = "2025-01-22"
+	Version   = "1.0.1"
+	BuildDate = "2026-01-25"
 	GitCommit = "dev"
 )
 
