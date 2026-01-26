@@ -32,7 +32,16 @@ jobs:
         run: GOOS=js GOARCH=wasm go build -o web/wasm/moji.wasm ./cmd/wasm/
 
       - name: Copy wasm_exec.js
-        run: cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" web/js/wasm_exec.js
+        run: |
+          # Try standard location first, then toolchain location
+          GOROOT=$(go env GOROOT)
+          if [ -f "$GOROOT/misc/wasm/wasm_exec.js" ]; then
+            cp "$GOROOT/misc/wasm/wasm_exec.js" web/js/wasm_exec.js
+          else
+            # Download from Go source for the installed version
+            GO_VERSION=$(go env GOVERSION)
+            curl -sL "https://raw.githubusercontent.com/golang/go/${GO_VERSION}/misc/wasm/wasm_exec.js" -o web/js/wasm_exec.js
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
