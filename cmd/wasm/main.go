@@ -64,7 +64,6 @@ func main() {
 	js.Global().Set("mojiPatternListDividers", js.FuncOf(mojiPatternListDividers))
 	js.Global().Set("mojiPatternListPatterns", js.FuncOf(mojiPatternListPatterns))
 
-
 	// Styles
 	js.Global().Set("mojiStyle", js.FuncOf(mojiStyle))
 	js.Global().Set("mojiStyleList", js.FuncOf(mojiStyleList))
@@ -379,7 +378,6 @@ func mojiPatternListPatterns(_ js.Value, _ []js.Value) interface{} {
 	return string(data)
 }
 
-
 // --- Styles ---
 
 func mojiStyle(_ js.Value, args []js.Value) interface{} {
@@ -594,4 +592,3 @@ func mojiCalendarArt(_ js.Value, _ []js.Value) interface{} {
 func mojiCalendarWeek(_ js.Value, _ []js.Value) interface{} {
 	return calendar.WeekView(calendar.Options{})
 }
-

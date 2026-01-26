@@ -89,9 +89,9 @@ func TestApplyGradientDefaultMode(t *testing.T) {
 func TestApplyChainOrder(t *testing.T) {
 	// Effect is applied first, then bubble, then border, then gradient
 	result := Apply("Hello", Options{
-		Effect:  "reverse",
-		Bubble:  "round",
-		Border:  "single",
+		Effect:   "reverse",
+		Bubble:   "round",
+		Border:   "single",
 		Gradient: "rainbow",
 	})
 

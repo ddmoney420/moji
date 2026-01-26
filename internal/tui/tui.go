@@ -196,9 +196,9 @@ type Model struct {
 	qrInvert          bool
 
 	// Gradient tab
-	gradientThemes  []string
-	selectedTheme   int
-	gradientMode    int // 0=horizontal, 1=vertical, 2=diagonal
+	gradientThemes []string
+	selectedTheme  int
+	gradientMode   int // 0=horizontal, 1=vertical, 2=diagonal
 
 	// Patterns tab
 	patternBorders  []string
@@ -208,9 +208,9 @@ type Model struct {
 	patternMode     int // 0=border, 1=divider
 
 	// Speech tab
-	speechStyles    []string
-	selectedSpeech  int
-	speechArts      []string
+	speechStyles      []string
+	selectedSpeech    int
+	speechArts        []string
 	selectedSpeechArt int
 
 	// Calendar tab

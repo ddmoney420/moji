@@ -21,8 +21,8 @@ func TestParseHexColor(t *testing.T) {
 		{"#0000ff", color.RGBA{0, 0, 255, 255}},
 		{"#0d1117", color.RGBA{13, 17, 23, 255}},
 		{"invalid", color.RGBA{0, 0, 0, 255}}, // fallback to black
-		{"", color.RGBA{0, 0, 0, 255}},         // fallback to black
-		{"#fff", color.RGBA{0, 0, 0, 255}},     // too short, fallback
+		{"", color.RGBA{0, 0, 0, 255}},        // fallback to black
+		{"#fff", color.RGBA{0, 0, 0, 255}},    // too short, fallback
 	}
 
 	for _, tt := range tests {
