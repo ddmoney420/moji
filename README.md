@@ -1,8 +1,9 @@
 # moji
 
-[![CI](https://github.com/ddmoney420/moji/actions/workflows/ci.yml/badge.svg)](https://github.com/ddmoney420/moji/actions/workflows/ci.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/ddmoney420/moji)](https://goreportcard.com/report/github.com/ddmoney420/moji)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Version](https://img.shields.io/github/go-mod/go-version/ddmoney420/moji?style=flat-square)](https://go.dev/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/ddmoney420/moji?style=flat-square)](https://goreportcard.com/report/github.com/ddmoney420/moji)
+[![License](https://img.shields.io/github/license/ddmoney420/moji?style=flat-square)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/ddmoney420/moji?style=flat-square)](https://github.com/ddmoney420/moji/releases)
 [![Go Reference](https://pkg.go.dev/badge/github.com/ddmoney420/moji.svg)](https://pkg.go.dev/github.com/ddmoney420/moji)
 
 A terminal art toolkit with 13 feature categories. 170+ kaomoji, 47 FIGlet fonts, 20 text effects, 23 color filters, 12 gradient themes, 24 image charsets, and more.
