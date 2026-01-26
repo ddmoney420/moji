@@ -336,7 +336,7 @@ func TestSampleRegion(t *testing.T) {
 	}
 
 	// Zero-size region
-	r, g, b, brightness = sampleRegion(img, 0, 0, 0, 0)
+	_, _, _, brightness = sampleRegion(img, 0, 0, 0, 0)
 	// Should handle gracefully (defaults to 1x1)
 	if brightness < 0 {
 		t.Error("Zero region should not return negative brightness")

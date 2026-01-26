@@ -23,11 +23,11 @@ func TestDefaultOptions(t *testing.T) {
 func TestGenerate(t *testing.T) {
 	// Create temp directory structure
 	dir := t.TempDir()
-	os.MkdirAll(filepath.Join(dir, "subdir"), 0755)
-	os.WriteFile(filepath.Join(dir, "file1.go"), []byte("package main"), 0644)
-	os.WriteFile(filepath.Join(dir, "file2.txt"), []byte("hello"), 0644)
-	os.WriteFile(filepath.Join(dir, "subdir", "nested.go"), []byte("package sub"), 0644)
-	os.WriteFile(filepath.Join(dir, ".hidden"), []byte("hidden"), 0644)
+	_ = os.MkdirAll(filepath.Join(dir, "subdir"), 0755)
+	_ = os.WriteFile(filepath.Join(dir, "file1.go"), []byte("package main"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, "file2.txt"), []byte("hello"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, "subdir", "nested.go"), []byte("package sub"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, ".hidden"), []byte("hidden"), 0644)
 
 	opts := DefaultOptions()
 	entry, err := Generate(dir, opts)
@@ -52,8 +52,8 @@ func TestGenerate(t *testing.T) {
 
 func TestGenerateShowHidden(t *testing.T) {
 	dir := t.TempDir()
-	os.WriteFile(filepath.Join(dir, ".hidden"), []byte("hidden"), 0644)
-	os.WriteFile(filepath.Join(dir, "visible"), []byte("visible"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, ".hidden"), []byte("hidden"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, "visible"), []byte("visible"), 0644)
 
 	opts := DefaultOptions()
 	opts.ShowHidden = true
@@ -75,8 +75,8 @@ func TestGenerateShowHidden(t *testing.T) {
 
 func TestGenerateMaxDepth(t *testing.T) {
 	dir := t.TempDir()
-	os.MkdirAll(filepath.Join(dir, "a", "b", "c"), 0755)
-	os.WriteFile(filepath.Join(dir, "a", "b", "c", "deep.txt"), []byte("deep"), 0644)
+	_ = os.MkdirAll(filepath.Join(dir, "a", "b", "c"), 0755)
+	_ = os.WriteFile(filepath.Join(dir, "a", "b", "c", "deep.txt"), []byte("deep"), 0644)
 
 	opts := DefaultOptions()
 	opts.MaxDepth = 1
@@ -100,8 +100,8 @@ func TestGenerateMaxDepth(t *testing.T) {
 
 func TestGenerateDirsOnly(t *testing.T) {
 	dir := t.TempDir()
-	os.MkdirAll(filepath.Join(dir, "subdir"), 0755)
-	os.WriteFile(filepath.Join(dir, "file.txt"), []byte("hello"), 0644)
+	_ = os.MkdirAll(filepath.Join(dir, "subdir"), 0755)
+	_ = os.WriteFile(filepath.Join(dir, "file.txt"), []byte("hello"), 0644)
 
 	opts := DefaultOptions()
 	opts.DirsOnly = true
@@ -119,8 +119,8 @@ func TestGenerateDirsOnly(t *testing.T) {
 
 func TestGenerateFilesOnly(t *testing.T) {
 	dir := t.TempDir()
-	os.MkdirAll(filepath.Join(dir, "subdir"), 0755)
-	os.WriteFile(filepath.Join(dir, "file.txt"), []byte("hello"), 0644)
+	_ = os.MkdirAll(filepath.Join(dir, "subdir"), 0755)
+	_ = os.WriteFile(filepath.Join(dir, "file.txt"), []byte("hello"), 0644)
 
 	opts := DefaultOptions()
 	opts.FilesOnly = true
@@ -138,9 +138,9 @@ func TestGenerateFilesOnly(t *testing.T) {
 
 func TestGeneratePattern(t *testing.T) {
 	dir := t.TempDir()
-	os.WriteFile(filepath.Join(dir, "main.go"), []byte("package main"), 0644)
-	os.WriteFile(filepath.Join(dir, "readme.md"), []byte("# readme"), 0644)
-	os.WriteFile(filepath.Join(dir, "test.go"), []byte("package test"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, "main.go"), []byte("package main"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, "readme.md"), []byte("# readme"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, "test.go"), []byte("package test"), 0644)
 
 	opts := DefaultOptions()
 	opts.Pattern = "*.go"
@@ -159,7 +159,7 @@ func TestGeneratePattern(t *testing.T) {
 func TestGenerateMaxItems(t *testing.T) {
 	dir := t.TempDir()
 	for i := 0; i < 10; i++ {
-		os.WriteFile(filepath.Join(dir, strings.Repeat("a", i+1)+".txt"), []byte("x"), 0644)
+		_ = os.WriteFile(filepath.Join(dir, strings.Repeat("a", i+1)+".txt"), []byte("x"), 0644)
 	}
 
 	opts := DefaultOptions()
@@ -221,7 +221,7 @@ func TestGetFileIcon(t *testing.T) {
 
 func TestSimple(t *testing.T) {
 	dir := t.TempDir()
-	os.WriteFile(filepath.Join(dir, "test.txt"), []byte("hello"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, "test.txt"), []byte("hello"), 0644)
 
 	output := Simple(dir, 1)
 	if output == "" {
@@ -241,8 +241,8 @@ func TestGenerateInvalidPath(t *testing.T) {
 
 func TestSortBySize(t *testing.T) {
 	dir := t.TempDir()
-	os.WriteFile(filepath.Join(dir, "small.txt"), []byte("a"), 0644)
-	os.WriteFile(filepath.Join(dir, "big.txt"), []byte(strings.Repeat("x", 1000)), 0644)
+	_ = os.WriteFile(filepath.Join(dir, "small.txt"), []byte("a"), 0644)
+	_ = os.WriteFile(filepath.Join(dir, "big.txt"), []byte(strings.Repeat("x", 1000)), 0644)
 
 	opts := DefaultOptions()
 	opts.SortBySize = true
