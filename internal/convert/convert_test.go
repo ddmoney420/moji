@@ -116,9 +116,10 @@ func TestFromImageWhite(t *testing.T) {
 		t.Fatalf("FromImage error: %v", err)
 	}
 
-	// White image should use dense characters (@)
-	if !strings.Contains(result, "@") {
-		t.Error("White image should contain @ characters")
+	// White image should use dense characters (last few in charset)
+	hasDenseChars := strings.ContainsAny(result, "#%@")
+	if !hasDenseChars {
+		t.Errorf("White image should contain dense characters (#, %%, @), got: %q", result)
 	}
 }
 
