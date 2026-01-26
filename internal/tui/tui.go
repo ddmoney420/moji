@@ -384,7 +384,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c", "esc":
 			// Send ourselves SIGINT to ensure clean exit
 			if p, err := os.FindProcess(os.Getpid()); err == nil {
-				p.Signal(os.Interrupt)
+				_ = p.Signal(os.Interrupt)
 			}
 			return m, tea.Quit
 
