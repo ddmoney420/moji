@@ -1,26 +1,26 @@
 class Moji < Formula
   desc "Terminal art toolkit - kaomoji, ASCII banners, filters, QR codes, and more"
   homepage "https://github.com/ddmoney420/moji"
-  version "1.0.0"
+  version "1.0.1"
   license "MIT"
 
   on_macos do
     if Hardware::CPU.arm?
       url "https://github.com/ddmoney420/moji/releases/download/v#{version}/moji_darwin_arm64.tar.gz"
-      sha256 "581d1b0d0ca40a7a2dd65458f3f79e82db7737e4ef6094bca7dd912763ddd7bd"
+      sha256 "9f77efcd3fa132ae59c9db43625c53e6da0fc280a3ad2591946bae1f859e7fb4"
     else
       url "https://github.com/ddmoney420/moji/releases/download/v#{version}/moji_darwin_amd64.tar.gz"
-      sha256 "af8a2d25dcbe81646416f85d4b6a52f96aa447e8d895c343c8cf8648e74f06e9"
+      sha256 "f3e4428ed51c4c36b4da520219e5c87f26009cfc768d423da83fce4ec3f3bcc1"
     end
   end
 
   on_linux do
     if Hardware::CPU.arm?
       url "https://github.com/ddmoney420/moji/releases/download/v#{version}/moji_linux_arm64.tar.gz"
-      sha256 "2c2f8d9456be0889fab62863043b3164a9be7d1294e5c0f6b4c6e5c22dbe92a6"
+      sha256 "a34c4c2c8bd6aba8e2245bbcbd37e4dd7eabae903bf14619b8ba8b6b1d276149"
     else
       url "https://github.com/ddmoney420/moji/releases/download/v#{version}/moji_linux_amd64.tar.gz"
-      sha256 "aa804595ab57d659a6aa4cd917c0c0c04938df92be4d5a2039a85b148f2b6485"
+      sha256 "3931153c18786eac82fbb5cc03f73c90917e7570b406477f74e4d51d50d8148f"
     end
   end
 
