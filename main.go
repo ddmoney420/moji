@@ -22,6 +22,7 @@ var (
 	quietFlag   bool
 	verboseFlag bool
 	noColorFlag bool
+	watchFlag   bool
 )
 
 func main() {

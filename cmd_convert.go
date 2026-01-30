@@ -13,6 +13,7 @@ import (
 	"github.com/ddmoney420/moji/internal/export"
 	"github.com/ddmoney420/moji/internal/imgproto"
 	"github.com/ddmoney420/moji/internal/ux"
+	"github.com/ddmoney420/moji/internal/watch"
 	"github.com/spf13/cobra"
 )
 
@@ -40,6 +41,7 @@ Examples:
 			colorFlag, _ := cmd.Flags().GetBool("color")
 			invert, _ := cmd.Flags().GetBool("invert")
 			protocol, _ := cmd.Flags().GetString("protocol")
+			watchFlag, _ := cmd.Flags().GetBool("watch")
 
 			if len(args) == 0 && url == "" {
 				fmt.Fprintln(os.Stderr, "Error: provide an image file or --url")
@@ -51,7 +53,12 @@ Examples:
 			if len(args) > 0 {
 				source = args[0]
 			}
-			handleConvert(source, url, width, height, charset, edge, colorFlag, invert, protocol)
+
+			if watchFlag && source != "" {
+				handleConvertWatch(source, url, width, height, charset, edge, colorFlag, invert, protocol)
+			} else {
+				handleConvert(source, url, width, height, charset, edge, colorFlag, invert, protocol)
+			}
 		},
 	}
 	cmd.Flags().String("url", "", "Image URL to convert")
@@ -63,6 +70,7 @@ Examples:
 	cmd.Flags().Bool("invert", false, "Invert brightness (for light backgrounds)")
 	cmd.Flags().String("protocol", "ascii", "Image protocol: ascii, sixel, kitty, iterm2, auto")
 	cmd.Flags().StringVarP(&outputFlag, "output", "o", "", "Save to file")
+	cmd.Flags().BoolVar(&watchFlag, "watch", false, "Watch for changes and re-render in real-time")
 	return cmd
 }
 
@@ -104,6 +112,19 @@ Examples:
 	cmd.Flags().Int("workers", 4, "Number of concurrent workers")
 	cmd.Flags().Bool("color", false, "Preserve colors")
 	return cmd
+}
+
+func handleConvertWatch(file, url string, width, height int, charset string, edge, color, invert bool, protocol string) {
+	fmt.Println("Watching for changes (Press Ctrl+C to exit)...")
+	renderConvert := func() {
+		fmt.Print("\033[2J\033[H")
+		handleConvert(file, url, width, height, charset, edge, color, invert, protocol)
+	}
+
+	err := watch.Watch(file, renderConvert)
+	if err != nil && err.Error() != "signal: interrupt" {
+		fmt.Fprintf(os.Stderr, "Watch error: %v\n", err)
+	}
 }
 
 func handleConvert(file, url string, width, height int, charset string, edge, color, invert bool, protocol string) {

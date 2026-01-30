@@ -11,6 +11,7 @@ import (
 	"github.com/ddmoney420/moji/internal/export"
 	"github.com/ddmoney420/moji/internal/gradient"
 	"github.com/ddmoney420/moji/internal/styles"
+	"github.com/ddmoney420/moji/internal/watch"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +22,12 @@ func newBannerCmd() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			gradientTheme, _ := cmd.Flags().GetString("gradient")
-			handleBanner(args[0], gradientTheme)
+			watchFlag, _ := cmd.Flags().GetBool("watch")
+			if watchFlag {
+				handleBannerWatch(args[0], gradientTheme)
+			} else {
+				handleBanner(args[0], gradientTheme)
+			}
 		},
 	}
 	cmd.Flags().StringVarP(&fontFlag, "font", "f", "standard", "Font name")
@@ -33,6 +39,7 @@ func newBannerCmd() *cobra.Command {
 	cmd.Flags().StringVar(&bgColorFlag, "bg", "#282a36", "Background color for PNG export (hex)")
 	cmd.Flags().StringVar(&fgColorFlag, "fg", "#f8f8f2", "Foreground color for PNG export (hex)")
 	cmd.Flags().String("gradient", "", "Apply color gradient theme (rainbow, neon, fire, etc.)")
+	cmd.Flags().BoolVar(&watchFlag, "watch", false, "Watch for changes and re-render in real-time")
 	return cmd
 }
 
@@ -60,6 +67,19 @@ func newPreviewCmd() *cobra.Command {
 	cmd.Flags().IntP("limit", "l", 5, "Number of fonts to preview")
 	cmd.Flags().StringP("category", "c", "", "Font category: 3d, graffiti, retro, big, clean, decorative, fun, small")
 	return cmd
+}
+
+func handleBannerWatch(text string, gradientTheme string) {
+	fmt.Println("Watching for changes (Press Ctrl+C to exit)...")
+	renderBanner := func() {
+		fmt.Print("\033[2J\033[H")
+		handleBanner(text, gradientTheme)
+	}
+
+	err := watch.Watch(".", renderBanner)
+	if err != nil && err.Error() != "signal: interrupt" {
+		fmt.Fprintf(os.Stderr, "Watch error: %v\n", err)
+	}
 }
 
 func handleBanner(text string, gradientTheme string) {
