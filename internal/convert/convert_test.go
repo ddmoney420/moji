@@ -351,3 +351,325 @@ func TestCharSetsNotEmpty(t *testing.T) {
 		}
 	}
 }
+
+// Test parallel processing
+func TestFromImageParallel(t *testing.T) {
+	img := createTestImage(600, 600, color.Gray{128})
+	opts := Options{
+		Width:   40,
+		Charset: " .:-=+*#%@",
+	}
+
+	result, err := FromImageParallel(img, opts)
+	if err != nil {
+		t.Fatalf("FromImageParallel error: %v", err)
+	}
+
+	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
+	if len(lines) == 0 {
+		t.Fatal("Result should have lines")
+	}
+
+	// Check width matches
+	for i, line := range lines {
+		if len(line) != 40 {
+			t.Errorf("Line %d width = %d, want 40", i, len(line))
+			break
+		}
+	}
+}
+
+// TestFromImageParallelBlack verifies parallel processing produces correct output for solid colors
+func TestFromImageParallelBlack(t *testing.T) {
+	img := createTestImage(1000, 1000, color.Black)
+	opts := Options{
+		Width:   50,
+		Charset: " .:-=+*#%@",
+	}
+
+	result, err := FromImageParallel(img, opts)
+	if err != nil {
+		t.Fatalf("FromImageParallel error: %v", err)
+	}
+
+	// Black image should use mostly dark characters (space)
+	spaceCount := strings.Count(result, " ")
+	totalChars := 0
+	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
+	for _, line := range lines {
+		totalChars += len(line)
+	}
+	if totalChars > 0 && float64(spaceCount)/float64(totalChars) < 0.8 {
+		t.Error("Parallel: Black image should produce mostly space characters")
+	}
+}
+
+// TestFromImageParallelWhite verifies parallel processing handles bright regions
+func TestFromImageParallelWhite(t *testing.T) {
+	img := createTestImage(1000, 1000, color.White)
+	opts := Options{
+		Width:   50,
+		Charset: " .:-=+*#%@",
+	}
+
+	result, err := FromImageParallel(img, opts)
+	if err != nil {
+		t.Fatalf("FromImageParallel error: %v", err)
+	}
+
+	// White image should use dense characters
+	hasDenseChars := strings.ContainsAny(result, "#%@")
+	if !hasDenseChars {
+		t.Errorf("Parallel: White image should contain dense characters (#, %%, @)")
+	}
+}
+
+// TestFromImageParallelGradient verifies parallel processing handles gradient correctly
+func TestFromImageParallelGradient(t *testing.T) {
+	img := createGradientImage(800, 800)
+	opts := Options{
+		Width:   40,
+		Charset: " .:-=+*#%@",
+	}
+
+	result, err := FromImageParallel(img, opts)
+	if err != nil {
+		t.Fatalf("FromImageParallel error: %v", err)
+	}
+
+	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
+	if len(lines) == 0 {
+		t.Fatal("Parallel gradient: Result should have lines")
+	}
+
+	// Verify output matches sequential version
+	optionsSeq := Options{
+		Width:   40,
+		Charset: " .:-=+*#%@",
+	}
+	// Force sequential by using small threshold
+	oldThreshold := parallelConfig.threshold
+	parallelConfig.threshold = 999999999 // Set impossibly high threshold
+	sequential, errSeq := FromImage(img, optionsSeq)
+	parallelConfig.threshold = oldThreshold
+
+	if errSeq != nil {
+		t.Fatalf("Sequential FromImage error: %v", errSeq)
+	}
+
+	if result != sequential {
+		t.Error("Parallel result differs from sequential result")
+	}
+}
+
+// TestFromImageParallelMatchesSequential verifies parallel and sequential produce identical output
+func TestFromImageParallelMatchesSequential(t *testing.T) {
+	// Create a large test image to ensure parallelization is used
+	img := createGradientImage(1000, 1000)
+	opts := Options{
+		Width:   80,
+		Height:  40,
+		Charset: " .:-=+*#%@",
+	}
+
+	// Get parallel result
+	parallelResult, err := FromImageParallel(img, opts)
+	if err != nil {
+		t.Fatalf("FromImageParallel error: %v", err)
+	}
+
+	// Get sequential result by forcing low threshold
+	oldThreshold := parallelConfig.threshold
+	parallelConfig.threshold = 999999999
+	sequentialResult, err := FromImage(img, opts)
+	parallelConfig.threshold = oldThreshold
+
+	if err != nil {
+		t.Fatalf("FromImage error: %v", err)
+	}
+
+	if parallelResult != sequentialResult {
+		t.Error("Parallel result does not match sequential result")
+		// Show first difference for debugging
+		for i := 0; i < len(parallelResult) && i < len(sequentialResult); i++ {
+			if parallelResult[i] != sequentialResult[i] {
+				t.Logf("First difference at byte %d: parallel=%q sequential=%q", i, parallelResult[i], sequentialResult[i])
+				break
+			}
+		}
+	}
+}
+
+// TestFromImageParallelColor verifies parallel processing with color enabled
+func TestFromImageParallelColor(t *testing.T) {
+	img := createTestImage(600, 600, color.RGBA{255, 0, 0, 255})
+	opts := Options{
+		Width:   40,
+		Charset: " .:-=+*#%@",
+		Color:   true,
+	}
+
+	result, err := FromImageParallel(img, opts)
+	if err != nil {
+		t.Fatalf("FromImageParallel with color error: %v", err)
+	}
+
+	// Should contain ANSI color codes
+	if !strings.Contains(result, "\x1b[38;2;") {
+		t.Error("Parallel color mode should produce ANSI color codes")
+	}
+}
+
+// TestFromImageParallelEdgeDetection verifies parallel processing with edge detection
+func TestFromImageParallelEdgeDetection(t *testing.T) {
+	// Create high contrast image
+	img := image.NewRGBA(image.Rect(0, 0, 600, 600))
+	for y := 0; y < 600; y++ {
+		for x := 0; x < 600; x++ {
+			if x < 300 {
+				img.Set(x, y, color.Black)
+			} else {
+				img.Set(x, y, color.White)
+			}
+		}
+	}
+
+	opts := Options{
+		Width:      40,
+		Charset:    " .:-=+*#%@",
+		EdgeDetect: true,
+	}
+
+	result, err := FromImageParallel(img, opts)
+	if err != nil {
+		t.Fatalf("FromImageParallel with edge detection error: %v", err)
+	}
+
+	if len(result) == 0 {
+		t.Error("Parallel edge detection should produce output")
+	}
+}
+
+// TestSetWorkerCount verifies worker count configuration
+func TestSetWorkerCount(t *testing.T) {
+	SetWorkerCount(4)
+	if parallelConfig.workerCount != 4 {
+		t.Errorf("SetWorkerCount(4) failed, got %d", parallelConfig.workerCount)
+	}
+
+	SetWorkerCount(1)
+	if parallelConfig.workerCount != 1 {
+		t.Errorf("SetWorkerCount(1) failed, got %d", parallelConfig.workerCount)
+	}
+
+	// Test invalid values
+	SetWorkerCount(0)
+	if parallelConfig.workerCount < 1 {
+		t.Errorf("SetWorkerCount(0) should clamp to 1, got %d", parallelConfig.workerCount)
+	}
+
+	SetWorkerCount(-5)
+	if parallelConfig.workerCount < 1 {
+		t.Errorf("SetWorkerCount(-5) should clamp to 1, got %d", parallelConfig.workerCount)
+	}
+}
+
+// TestSetParallelThreshold verifies threshold configuration
+func TestSetParallelThreshold(t *testing.T) {
+	oldThreshold := parallelConfig.threshold
+	defer func() { parallelConfig.threshold = oldThreshold }()
+
+	SetParallelThreshold(1000000)
+	if parallelConfig.threshold != 1000000 {
+		t.Errorf("SetParallelThreshold(1000000) failed, got %d", parallelConfig.threshold)
+	}
+
+	SetParallelThreshold(1)
+	if parallelConfig.threshold != 1 {
+		t.Errorf("SetParallelThreshold(1) failed, got %d", parallelConfig.threshold)
+	}
+
+	// Test invalid values
+	SetParallelThreshold(0)
+	if parallelConfig.threshold < 1 {
+		t.Errorf("SetParallelThreshold(0) should clamp to 1, got %d", parallelConfig.threshold)
+	}
+}
+
+// TestFromImageAutoParallel verifies that FromImage automatically uses parallel for large images
+func TestFromImageAutoParallel(t *testing.T) {
+	// Set a low threshold to trigger parallelization
+	oldThreshold := parallelConfig.threshold
+	defer func() { parallelConfig.threshold = oldThreshold }()
+
+	SetParallelThreshold(100 * 100) // 10000 pixels
+
+	// Create an image larger than threshold
+	img := createTestImage(600, 600, color.Gray{128})
+	opts := Options{
+		Width:   40,
+		Charset: " .:-=+*#%@",
+	}
+
+	result, err := FromImage(img, opts)
+	if err != nil {
+		t.Fatalf("FromImage with auto-parallel error: %v", err)
+	}
+
+	lines := strings.Split(strings.TrimRight(result, "\n"), "\n")
+	if len(lines) == 0 {
+		t.Fatal("Result should have lines")
+	}
+}
+
+// BenchmarkFromImageSequential benchmarks sequential processing
+func BenchmarkFromImageSequential(b *testing.B) {
+	// Force sequential processing by setting very high threshold
+	oldThreshold := parallelConfig.threshold
+	parallelConfig.threshold = 999999999
+	defer func() { parallelConfig.threshold = oldThreshold }()
+
+	img := createTestImage(1000, 1000, color.Gray{128})
+	opts := Options{
+		Width:   80,
+		Charset: " .:-=+*#%@",
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = FromImage(img, opts)
+	}
+}
+
+// BenchmarkFromImageParallel benchmarks parallel processing
+func BenchmarkFromImageParallel(b *testing.B) {
+	img := createTestImage(1000, 1000, color.Gray{128})
+	opts := Options{
+		Width:   80,
+		Charset: " .:-=+*#%@",
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = FromImageParallel(img, opts)
+	}
+}
+
+// BenchmarkFromImageLarge benchmarks on larger image (to show parallelization benefit)
+func BenchmarkFromImageLarge(b *testing.B) {
+	// Force parallel processing
+	oldThreshold := parallelConfig.threshold
+	SetParallelThreshold(100 * 100)
+	defer func() { parallelConfig.threshold = oldThreshold }()
+
+	img := createTestImage(2000, 2000, color.Gray{128})
+	opts := Options{
+		Width:   100,
+		Charset: " .:-=+*#%@",
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = FromImage(img, opts)
+	}
+}

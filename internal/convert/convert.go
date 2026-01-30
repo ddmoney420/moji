@@ -175,7 +175,26 @@ func FromReader(r io.Reader, opts Options) (string, error) {
 }
 
 // FromImage converts an image.Image to ASCII art
+// For large images (above threshold), automatically uses parallel processing
 func FromImage(img image.Image, opts Options) (string, error) {
+	bounds := img.Bounds()
+	imgWidth := bounds.Max.X - bounds.Min.X
+	imgHeight := bounds.Max.Y - bounds.Min.Y
+
+	// Check if image is large enough to benefit from parallelization
+	pixelCount := imgWidth * imgHeight
+	if pixelCount >= parallelConfig.threshold {
+		// Use parallel processing for large images
+		return FromImageParallel(img, opts)
+	}
+
+	// Sequential processing for small images
+	return fromImageSequential(img, opts)
+}
+
+// fromImageSequential performs the actual sequential pixel-by-pixel conversion
+// This is the core algorithm used by both FromImage and FromImageParallel
+func fromImageSequential(img image.Image, opts Options) (string, error) {
 	if opts.Charset == "" {
 		opts.Charset = CharSets["standard"]
 	}
