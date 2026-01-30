@@ -27,6 +27,8 @@ type Capabilities struct {
 	Sixel         bool
 	Kitty         bool
 	ITerm2        bool
+	WezTerm       bool
+	Terminology   bool
 	IsInteractive bool
 	IsTmux        bool
 	IsScreen      bool
@@ -61,6 +63,8 @@ func Detect() Capabilities {
 	caps.Sixel = detectSixel()
 	caps.Kitty = detectKitty()
 	caps.ITerm2 = detectITerm2()
+	caps.WezTerm = detectWezTerm()
+	caps.Terminology = detectTerminology()
 
 	return caps
 }
@@ -228,6 +232,19 @@ func detectITerm2() bool {
 	termProgram := os.Getenv("TERM_PROGRAM")
 	return termProgram == "iTerm.app" ||
 		os.Getenv("ITERM_SESSION_ID") != ""
+}
+
+// detectWezTerm checks for WezTerm graphics protocol support
+func detectWezTerm() bool {
+	termProgram := os.Getenv("TERM_PROGRAM")
+	return termProgram == "WezTerm" ||
+		strings.Contains(os.Getenv("TERM"), "wezterm")
+}
+
+// detectTerminology checks for Terminology image protocol support
+func detectTerminology() bool {
+	// Terminology sets the TERMINOLOGY environment variable
+	return os.Getenv("TERMINOLOGY") != ""
 }
 
 // ColorString returns a human-readable color level description

@@ -25,6 +25,10 @@ const (
 	Kitty
 	// ITerm2 is iTerm2 inline images
 	ITerm2
+	// WezTerm is WezTerm graphics protocol
+	WezTerm
+	// Terminology is Terminology image protocol
+	Terminology
 )
 
 // String returns the protocol name
@@ -36,6 +40,10 @@ func (p Protocol) String() string {
 		return "kitty"
 	case ITerm2:
 		return "iterm2"
+	case WezTerm:
+		return "wezterm"
+	case Terminology:
+		return "terminology"
 	default:
 		return "ascii"
 	}
@@ -50,6 +58,10 @@ func ParseProtocol(s string) Protocol {
 		return Kitty
 	case "iterm2", "iterm":
 		return ITerm2
+	case "wezterm":
+		return WezTerm
+	case "terminology":
+		return Terminology
 	case "auto":
 		return Detect()
 	default:
@@ -63,11 +75,17 @@ func Detect() Protocol {
 	if caps.Kitty {
 		return Kitty
 	}
+	if caps.WezTerm {
+		return WezTerm
+	}
 	if caps.ITerm2 {
 		return ITerm2
 	}
 	if caps.Sixel {
 		return Sixel
+	}
+	if caps.Terminology {
+		return Terminology
 	}
 	return ASCII
 }
@@ -81,6 +99,10 @@ func Render(img image.Image, proto Protocol, width int) (string, error) {
 		return RenderKitty(img, width)
 	case ITerm2:
 		return RenderITerm2(img, width)
+	case WezTerm:
+		return RenderWezTerm(img, width)
+	case Terminology:
+		return RenderTerminology(img, width)
 	default:
 		return "", fmt.Errorf("protocol %s requires ASCII conversion, not image rendering", proto)
 	}
@@ -151,6 +173,71 @@ func RenderITerm2(img image.Image, width int) (string, error) {
 		w, h, encoded)
 
 	return result, nil
+}
+
+// RenderWezTerm renders an image using the WezTerm graphics protocol
+// WezTerm uses a protocol compatible with iTerm2, with tmux passthrough support
+func RenderWezTerm(img image.Image, width int) (string, error) {
+	// Scale image to fit width
+	img = scaleImage(img, width)
+
+	// Encode to PNG
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		return "", fmt.Errorf("encoding PNG: %w", err)
+	}
+
+	// Base64 encode the image
+	encoded := base64.StdEncoding.EncodeToString(buf.Bytes())
+
+	// WezTerm uses iTerm2-compatible protocol with tmux passthrough
+	bounds := img.Bounds()
+	w := bounds.Dx()
+	h := bounds.Dy()
+
+	// Check if running under tmux and apply passthrough if needed
+	tmuxSession := os.Getenv("TMUX")
+	var result string
+
+	if tmuxSession != "" {
+		// Tmux passthrough: escape sequences must be wrapped
+		// Pattern: \ePtmux;\e<sequence>\e\\
+		result = fmt.Sprintf("\x1bPtmux;\x1b\x1b]1337;File=inline=1;width=%dpx;height=%dpx;preserveAspectRatio=1:%s\x07\x1b\\",
+			w, h, encoded)
+	} else {
+		// Direct iTerm2-compatible protocol
+		result = fmt.Sprintf("\x1b]1337;File=inline=1;width=%dpx;height=%dpx;preserveAspectRatio=1:%s\x07",
+			w, h, encoded)
+	}
+
+	return result + "\n", nil
+}
+
+// RenderTerminology renders an image using the Terminology graphics protocol
+// Terminology uses inline image escape sequences with width and height specification
+func RenderTerminology(img image.Image, width int) (string, error) {
+	// Scale image to fit width
+	img = scaleImage(img, width)
+
+	// Encode to PNG
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		return "", fmt.Errorf("encoding PNG: %w", err)
+	}
+
+	// Base64 encode the image
+	encoded := base64.StdEncoding.EncodeToString(buf.Bytes())
+
+	bounds := img.Bounds()
+	w := bounds.Dx()
+	h := bounds.Dy()
+
+	// Terminology inline image protocol: \033}is#<width>;<height>;<data>\033\\
+	// Format: ESC } is # W ; H ; <base64-data> ESC \\
+	result := fmt.Sprintf("\x1b}is#%d;%d;%s\x1b\\",
+		w, h, encoded)
+
+	return result + "\n", nil
 }
 
 // RenderSixel renders an image using the Sixel graphics protocol
@@ -226,7 +313,7 @@ func RenderSixel(img image.Image, width int) (string, error) {
 
 // ListProtocols returns available protocol names
 func ListProtocols() []string {
-	return []string{"auto", "ascii", "sixel", "kitty", "iterm2"}
+	return []string{"auto", "ascii", "sixel", "kitty", "iterm2", "wezterm", "terminology"}
 }
 
 // WriteToTerminal writes the rendered image directly to the terminal

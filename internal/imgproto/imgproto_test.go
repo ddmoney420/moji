@@ -89,6 +89,8 @@ func TestProtocolString(t *testing.T) {
 		{Sixel, "sixel"},
 		{Kitty, "kitty"},
 		{ITerm2, "iterm2"},
+		{WezTerm, "wezterm"},
+		{Terminology, "terminology"},
 		{Protocol(99), "ascii"}, // invalid protocol should default to ascii
 	}
 
@@ -124,6 +126,14 @@ func TestParseProtocol(t *testing.T) {
 		{"iterm", ITerm2},
 		{"ITERM", ITerm2},
 
+		// WezTerm variations
+		{"wezterm", WezTerm},
+		{"WEZTERM", WezTerm},
+
+		// Terminology variations
+		{"terminology", Terminology},
+		{"TERMINOLOGY", Terminology},
+
 		// ASCII variations
 		{"ascii", ASCII},
 		{"ASCII", ASCII},
@@ -151,6 +161,7 @@ func TestDetect(t *testing.T) {
 	origITermSessionID := os.Getenv("ITERM_SESSION_ID")
 	origTermProgram := os.Getenv("TERM_PROGRAM")
 	origTerm := os.Getenv("TERM")
+	origTerminology := os.Getenv("TERMINOLOGY")
 
 	defer func() {
 		// Restore original environment
@@ -174,6 +185,11 @@ func TestDetect(t *testing.T) {
 		} else {
 			os.Unsetenv("TERM")
 		}
+		if origTerminology != "" {
+			os.Setenv("TERMINOLOGY", origTerminology)
+		} else {
+			os.Unsetenv("TERMINOLOGY")
+		}
 	}()
 
 	tests := []struct {
@@ -182,6 +198,7 @@ func TestDetect(t *testing.T) {
 		iTermSessionID   string
 		termProgram      string
 		term             string
+		terminology      string
 		expectedProtocol Protocol
 	}{
 		{
@@ -190,6 +207,7 @@ func TestDetect(t *testing.T) {
 			iTermSessionID:   "",
 			termProgram:      "",
 			term:             "xterm-256color",
+			terminology:      "",
 			expectedProtocol: Kitty,
 		},
 		{
@@ -198,7 +216,26 @@ func TestDetect(t *testing.T) {
 			iTermSessionID:   "",
 			termProgram:      "",
 			term:             "xterm-kitty",
+			terminology:      "",
 			expectedProtocol: Kitty,
+		},
+		{
+			name:             "WezTerm via TERM_PROGRAM",
+			kittyWindowID:    "",
+			iTermSessionID:   "",
+			termProgram:      "WezTerm",
+			term:             "xterm-256color",
+			terminology:      "",
+			expectedProtocol: WezTerm,
+		},
+		{
+			name:             "WezTerm via TERM variable",
+			kittyWindowID:    "",
+			iTermSessionID:   "",
+			termProgram:      "",
+			term:             "wezterm",
+			terminology:      "",
+			expectedProtocol: WezTerm,
 		},
 		{
 			name:             "iTerm2 via session ID",
@@ -206,6 +243,7 @@ func TestDetect(t *testing.T) {
 			iTermSessionID:   "w0t0p0:0x0",
 			termProgram:      "",
 			term:             "xterm-256color",
+			terminology:      "",
 			expectedProtocol: ITerm2,
 		},
 		{
@@ -214,7 +252,17 @@ func TestDetect(t *testing.T) {
 			iTermSessionID:   "",
 			termProgram:      "iTerm.app",
 			term:             "xterm-256color",
+			terminology:      "",
 			expectedProtocol: ITerm2,
+		},
+		{
+			name:             "Terminology via env var",
+			kittyWindowID:    "",
+			iTermSessionID:   "",
+			termProgram:      "",
+			term:             "dumb",
+			terminology:      "1",
+			expectedProtocol: Terminology,
 		},
 		{
 			name:             "Sixel via TERM",
@@ -222,22 +270,34 @@ func TestDetect(t *testing.T) {
 			iTermSessionID:   "",
 			termProgram:      "",
 			term:             "xterm",
+			terminology:      "",
 			expectedProtocol: Sixel,
 		},
 		{
-			name:             "Priority: Kitty over iTerm2",
+			name:             "Priority: Kitty over WezTerm",
 			kittyWindowID:    "1",
-			iTermSessionID:   "w0t0p0:0x0",
-			termProgram:      "iTerm.app",
+			iTermSessionID:   "",
+			termProgram:      "WezTerm",
 			term:             "xterm-kitty",
+			terminology:      "",
 			expectedProtocol: Kitty,
 		},
 		{
-			name:             "Priority: iTerm2 over Sixel",
+			name:             "Priority: WezTerm over iTerm2",
+			kittyWindowID:    "",
+			iTermSessionID:   "w0t0p0:0x0",
+			termProgram:      "WezTerm",
+			term:             "xterm-256color",
+			terminology:      "",
+			expectedProtocol: WezTerm,
+		},
+		{
+			name:             "Priority: iTerm2 over Terminology",
 			kittyWindowID:    "",
 			iTermSessionID:   "w0t0p0:0x0",
 			termProgram:      "",
-			term:             "xterm",
+			term:             "xterm-256color",
+			terminology:      "1",
 			expectedProtocol: ITerm2,
 		},
 		{
@@ -246,6 +306,7 @@ func TestDetect(t *testing.T) {
 			iTermSessionID:   "",
 			termProgram:      "",
 			term:             "dumb",
+			terminology:      "",
 			expectedProtocol: ASCII,
 		},
 	}
@@ -256,6 +317,7 @@ func TestDetect(t *testing.T) {
 			os.Unsetenv("ITERM_SESSION_ID")
 			os.Unsetenv("TERM_PROGRAM")
 			os.Unsetenv("TERM")
+			os.Unsetenv("TERMINOLOGY")
 
 			if tt.kittyWindowID != "" {
 				os.Setenv("KITTY_WINDOW_ID", tt.kittyWindowID)
@@ -269,6 +331,9 @@ func TestDetect(t *testing.T) {
 			if tt.term != "" {
 				os.Setenv("TERM", tt.term)
 			}
+			if tt.terminology != "" {
+				os.Setenv("TERMINOLOGY", tt.terminology)
+			}
 
 			got := Detect()
 			if got != tt.expectedProtocol {
@@ -281,7 +346,7 @@ func TestDetect(t *testing.T) {
 // TestListProtocols tests the ListProtocols function
 func TestListProtocols(t *testing.T) {
 	protocols := ListProtocols()
-	expected := []string{"auto", "ascii", "sixel", "kitty", "iterm2"}
+	expected := []string{"auto", "ascii", "sixel", "kitty", "iterm2", "wezterm", "terminology"}
 
 	if len(protocols) != len(expected) {
 		t.Errorf("ListProtocols() returned %d items, want %d", len(protocols), len(expected))
@@ -763,6 +828,151 @@ func TestScaleImage(t *testing.T) {
 	}
 }
 
+// TestRenderWezTerm tests WezTerm graphics protocol rendering
+func TestRenderWezTerm(t *testing.T) {
+	tests := []struct {
+		name     string
+		image    image.Image
+		width    int
+		validate func(t *testing.T, output string)
+	}{
+		{
+			name:  "Simple solid color",
+			image: createSolidColorImage(16, 16, color.RGBA{255, 0, 0, 255}),
+			width: 80,
+			validate: func(t *testing.T, output string) {
+				// WezTerm should use iTerm2-compatible protocol
+				if !strings.Contains(output, "\x1b]1337;") && !strings.Contains(output, "\x1bPtmux;") {
+					t.Errorf("WezTerm output should contain iTerm2 protocol or tmux passthrough")
+				}
+				if !strings.Contains(output, "File=") {
+					t.Errorf("WezTerm output should contain File parameter")
+				}
+				if !strings.Contains(output, "inline=1") {
+					t.Errorf("WezTerm output should contain inline=1 parameter")
+				}
+				if !hasBase64Content(output) {
+					t.Errorf("WezTerm output should contain base64 encoded data")
+				}
+			},
+		},
+		{
+			name:  "Multi-color image",
+			image: createMultiColorImage(32, 32),
+			width: 80,
+			validate: func(t *testing.T, output string) {
+				if !strings.Contains(output, "File=") {
+					t.Errorf("WezTerm output should contain File parameter")
+				}
+				if !hasBase64Content(output) {
+					t.Errorf("WezTerm output should contain base64 data")
+				}
+			},
+		},
+		{
+			name:  "Large image with scaling",
+			image: createGradientImage(256, 256),
+			width: 20,
+			validate: func(t *testing.T, output string) {
+				if !strings.Contains(output, "preserveAspectRatio=1:") {
+					t.Errorf("WezTerm output should contain preserveAspectRatio parameter")
+				}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output, err := RenderWezTerm(tt.image, tt.width)
+			if err != nil {
+				t.Fatalf("RenderWezTerm() error = %v", err)
+			}
+			if output == "" {
+				t.Errorf("RenderWezTerm() returned empty output")
+			}
+			tt.validate(t, output)
+		})
+	}
+}
+
+// TestRenderTerminology tests Terminology graphics protocol rendering
+func TestRenderTerminology(t *testing.T) {
+	tests := []struct {
+		name     string
+		image    image.Image
+		width    int
+		validate func(t *testing.T, output string)
+	}{
+		{
+			name:  "Simple solid color",
+			image: createSolidColorImage(16, 16, color.RGBA{0, 255, 0, 255}),
+			width: 80,
+			validate: func(t *testing.T, output string) {
+				// Terminology should use inline image protocol
+				if !strings.Contains(output, "\x1b}is#") {
+					t.Errorf("Terminology output should contain inline image escape sequence")
+				}
+				if !strings.Contains(output, "\x1b\\") {
+					t.Errorf("Terminology output should contain terminator")
+				}
+				if !hasBase64Content(output) {
+					t.Errorf("Terminology output should contain base64 encoded data")
+				}
+			},
+		},
+		{
+			name:  "Multi-color image",
+			image: createMultiColorImage(32, 32),
+			width: 80,
+			validate: func(t *testing.T, output string) {
+				if !strings.Contains(output, "\x1b}is#") {
+					t.Errorf("Terminology output should contain inline image escape")
+				}
+				// Should contain dimensions: width;height;
+				if !strings.Contains(output, ";") {
+					t.Errorf("Terminology output should contain dimension separators")
+				}
+			},
+		},
+		{
+			name:  "Large image with scaling",
+			image: createGradientImage(256, 256),
+			width: 20,
+			validate: func(t *testing.T, output string) {
+				if !strings.Contains(output, "\x1b}is#") {
+					t.Errorf("Terminology output should contain inline image sequence")
+				}
+				if !hasBase64Content(output) {
+					t.Errorf("Terminology output should contain base64 data")
+				}
+			},
+		},
+		{
+			name:  "Small 1x1 image",
+			image: createSolidColorImage(1, 1, color.RGBA{255, 255, 0, 255}),
+			width: 80,
+			validate: func(t *testing.T, output string) {
+				if !strings.Contains(output, "\x1b}is#1;1;") {
+					t.Errorf("Terminology output should preserve 1x1 dimensions")
+				}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output, err := RenderTerminology(tt.image, tt.width)
+			if err != nil {
+				t.Fatalf("RenderTerminology() error = %v", err)
+			}
+			if output == "" {
+				t.Errorf("RenderTerminology() returned empty output")
+			}
+			tt.validate(t, output)
+		})
+	}
+}
+
 // TestRender tests the generic Render function
 func TestRender(t *testing.T) {
 	img := createSolidColorImage(32, 32, color.RGBA{100, 150, 200, 255})
@@ -805,6 +1015,30 @@ func TestRender(t *testing.T) {
 				}
 				if !strings.Contains(output, "\x1b]1337;") {
 					t.Errorf("iTerm2 output missing OSC sequence")
+				}
+			},
+		},
+		{
+			name:  "WezTerm rendering",
+			proto: WezTerm,
+			validate: func(t *testing.T, output string, err error) {
+				if err != nil {
+					t.Fatalf("Render() error = %v", err)
+				}
+				if !strings.Contains(output, "\x1b]1337;") && !strings.Contains(output, "\x1bPtmux;") {
+					t.Errorf("WezTerm output missing protocol sequence")
+				}
+			},
+		},
+		{
+			name:  "Terminology rendering",
+			proto: Terminology,
+			validate: func(t *testing.T, output string, err error) {
+				if err != nil {
+					t.Fatalf("Render() error = %v", err)
+				}
+				if !strings.Contains(output, "\x1b}is#") {
+					t.Errorf("Terminology output missing inline image sequence")
 				}
 			},
 		},
