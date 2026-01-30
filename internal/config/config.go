@@ -9,6 +9,10 @@ import (
 )
 
 // Config represents the moji configuration
+// Configuration schema is available at docs/config-schema.json
+// The JSON Schema enables editor autocompletion and validation in VS Code and other editors.
+// To use the schema in your config file, add this comment at the top:
+//   # yaml-language-server: $schema=<path-to-repo>/docs/config-schema.json
 type Config struct {
 	// Default settings
 	Defaults Defaults `json:"defaults" yaml:"defaults"`
@@ -181,6 +185,8 @@ func Load() (*Config, error) {
 }
 
 // Save saves configuration to file
+// For editor autocompletion and validation, add this line at the top of your config file:
+//   # yaml-language-server: $schema=<path-to-repo>/docs/config-schema.json
 func (c *Config) Save() error {
 	configPath := ConfigPath()
 	if configPath == "" {

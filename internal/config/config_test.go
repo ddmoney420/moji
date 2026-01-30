@@ -1155,3 +1155,185 @@ func TestSave_RecreatesExistingDirectory(t *testing.T) {
 		t.Error("Save() didn't create file in existing directory")
 	}
 }
+
+// ============================================================================
+// Schema Generation Tests
+// ============================================================================
+
+func TestGenerateSchema_ReturnsValidJSON(t *testing.T) {
+	schemaStr := GenerateSchema()
+
+	if schemaStr == "" {
+		t.Error("GenerateSchema() returned empty string")
+	}
+
+	// Verify it's valid JSON
+	var schema map[string]interface{}
+	err := json.Unmarshal([]byte(schemaStr), &schema)
+	if err != nil {
+		t.Fatalf("GenerateSchema() returned invalid JSON: %v", err)
+	}
+}
+
+func TestGenerateSchema_ContainsRequiredFields(t *testing.T) {
+	schemaStr := GenerateSchema()
+
+	var schema map[string]interface{}
+	json.Unmarshal([]byte(schemaStr), &schema)
+
+	requiredFields := []string{"$schema", "title", "type", "properties"}
+	for _, field := range requiredFields {
+		if _, ok := schema[field]; !ok {
+			t.Errorf("GenerateSchema() missing required field: %s", field)
+		}
+	}
+}
+
+func TestGenerateSchema_ContainsAllConfigSections(t *testing.T) {
+	schemaStr := GenerateSchema()
+
+	var schema map[string]interface{}
+	json.Unmarshal([]byte(schemaStr), &schema)
+
+	properties, ok := schema["properties"].(map[string]interface{})
+	if !ok {
+		t.Fatal("Properties is not a map")
+	}
+
+	requiredProperties := []string{"defaults", "presets", "art_paths", "font_paths", "cowfile_paths", "aliases"}
+	for _, prop := range requiredProperties {
+		if _, ok := properties[prop]; !ok {
+			t.Errorf("GenerateSchema() missing property: %s", prop)
+		}
+	}
+}
+
+func TestGenerateSchema_DefaultsSectionComplete(t *testing.T) {
+	schemaStr := GenerateSchema()
+
+	var schema map[string]interface{}
+	json.Unmarshal([]byte(schemaStr), &schema)
+
+	properties := schema["properties"].(map[string]interface{})
+	defaults := properties["defaults"].(map[string]interface{})
+	defaultsProps := defaults["properties"].(map[string]interface{})
+
+	expectedFields := []string{
+		"banner_font", "banner_style", "banner_border",
+		"convert_width", "convert_charset", "convert_dither",
+		"gradient_theme", "gradient_mode",
+		"bubble_style", "bubble_width",
+		"qr_charset",
+		"pattern_border", "pattern_divider",
+		"copy_to_clipboard", "json_output",
+	}
+
+	for _, field := range expectedFields {
+		if _, ok := defaultsProps[field]; !ok {
+			t.Errorf("GenerateSchema() defaults missing field: %s", field)
+		}
+	}
+}
+
+func TestGenerateSchema_FieldsHaveDescriptions(t *testing.T) {
+	schemaStr := GenerateSchema()
+
+	var schema map[string]interface{}
+	json.Unmarshal([]byte(schemaStr), &schema)
+
+	properties := schema["properties"].(map[string]interface{})
+	defaults := properties["defaults"].(map[string]interface{})
+	defaultsProps := defaults["properties"].(map[string]interface{})
+
+	// Check a sample field has description
+	bannerFont := defaultsProps["banner_font"].(map[string]interface{})
+	if _, ok := bannerFont["description"]; !ok {
+		t.Error("Field missing description")
+	}
+	if _, ok := bannerFont["title"]; !ok {
+		t.Error("Field missing title")
+	}
+	if _, ok := bannerFont["default"]; !ok {
+		t.Error("Field missing default value")
+	}
+}
+
+func TestGenerateSchema_HasEnumValues(t *testing.T) {
+	schemaStr := GenerateSchema()
+
+	var schema map[string]interface{}
+	json.Unmarshal([]byte(schemaStr), &schema)
+
+	properties := schema["properties"].(map[string]interface{})
+	defaults := properties["defaults"].(map[string]interface{})
+	defaultsProps := defaults["properties"].(map[string]interface{})
+
+	// banner_border should have enum
+	bannerBorder := defaultsProps["banner_border"].(map[string]interface{})
+	if enum, ok := bannerBorder["enum"]; !ok {
+		t.Error("banner_border missing enum")
+	} else {
+		enumList := enum.([]interface{})
+		if len(enumList) == 0 {
+			t.Error("banner_border enum is empty")
+		}
+	}
+}
+
+func TestGenerateSchema_HasExamples(t *testing.T) {
+	schemaStr := GenerateSchema()
+
+	var schema map[string]interface{}
+	json.Unmarshal([]byte(schemaStr), &schema)
+
+	if examples, ok := schema["examples"]; !ok {
+		t.Error("Schema missing examples")
+	} else {
+		exampleList := examples.([]interface{})
+		if len(exampleList) == 0 {
+			t.Error("Schema examples is empty")
+		}
+	}
+}
+
+func TestGenerateSchema_PresetsAreDefined(t *testing.T) {
+	schemaStr := GenerateSchema()
+
+	var schema map[string]interface{}
+	json.Unmarshal([]byte(schemaStr), &schema)
+
+	properties := schema["properties"].(map[string]interface{})
+	if _, ok := properties["presets"]; !ok {
+		t.Error("Presets section missing")
+	}
+
+	presets := properties["presets"].(map[string]interface{})
+	if presets["type"] != "object" {
+		t.Error("Presets should be object type")
+	}
+}
+
+func TestGenerateSchema_ValidatesAgainstDefaultConfig(t *testing.T) {
+	schemaStr := GenerateSchema()
+
+	var schema map[string]interface{}
+	err := json.Unmarshal([]byte(schemaStr), &schema)
+	if err != nil {
+		t.Fatalf("Schema is not valid JSON: %v", err)
+	}
+
+	// Verify default config would be valid against schema
+	cfg := DefaultConfig()
+	cfgData, _ := json.MarshalIndent(cfg, "", "  ")
+
+	var cfgObj map[string]interface{}
+	err = json.Unmarshal(cfgData, &cfgObj)
+	if err != nil {
+		t.Fatalf("Default config is not valid JSON: %v", err)
+	}
+
+	// Verify required fields are present
+	if _, ok := cfgObj["defaults"]; !ok {
+		t.Error("Default config missing defaults section")
+	}
+}

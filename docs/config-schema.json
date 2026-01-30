@@ -1,0 +1,266 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Moji Configuration Schema",
+  "description": "Configuration schema for moji CLI tool",
+  "type": "object",
+  "required": [
+    "defaults"
+  ],
+  "properties": {
+    "defaults": {
+      "type": "object",
+      "title": "Default Settings",
+      "description": "Default values for moji commands",
+      "properties": {
+        "banner_font": {
+          "type": "string",
+          "title": "Banner Font",
+          "description": "Default font for banner command (standard, shadow, slant, block, etc.)",
+          "default": "standard",
+          "examples": [
+            "standard",
+            "shadow",
+            "slant",
+            "block"
+          ]
+        },
+        "banner_style": {
+          "type": "string",
+          "title": "Banner Style",
+          "description": "Default style for banner output (none, bold, italic, etc.)",
+          "default": "none",
+          "examples": [
+            "none",
+            "bold",
+            "italic"
+          ]
+        },
+        "banner_border": {
+          "type": "string",
+          "title": "Banner Border",
+          "description": "Default border for banner (none, single, double, round, bold, stars, hash, etc.)",
+          "default": "none",
+          "enum": [
+            "none",
+            "single",
+            "double",
+            "round",
+            "bold",
+            "stars",
+            "hash"
+          ]
+        },
+        "convert_width": {
+          "type": "integer",
+          "title": "Convert Width",
+          "description": "Default width for ASCII art conversion in characters",
+          "default": 80,
+          "minimum": 10,
+          "maximum": 1000
+        },
+        "convert_charset": {
+          "type": "string",
+          "title": "Convert Charset",
+          "description": "Default character set for ASCII conversion (standard, extended, blocks, etc.)",
+          "default": "standard",
+          "examples": [
+            "standard",
+            "extended",
+            "blocks"
+          ]
+        },
+        "convert_dither": {
+          "type": "string",
+          "title": "Convert Dither",
+          "description": "Default dithering algorithm (none, floyd, bayer, etc.)",
+          "default": "none",
+          "examples": [
+            "none",
+            "floyd",
+            "bayer"
+          ]
+        },
+        "gradient_theme": {
+          "type": "string",
+          "title": "Gradient Theme",
+          "description": "Default gradient theme (rainbow, neon, retro, fire, ocean, etc.)",
+          "default": "rainbow",
+          "examples": [
+            "rainbow",
+            "neon",
+            "retro",
+            "fire",
+            "ocean"
+          ]
+        },
+        "gradient_mode": {
+          "type": "string",
+          "title": "Gradient Mode",
+          "description": "Direction of gradient application (horizontal, vertical, diagonal)",
+          "default": "horizontal",
+          "enum": [
+            "horizontal",
+            "vertical",
+            "diagonal"
+          ]
+        },
+        "bubble_style": {
+          "type": "string",
+          "title": "Bubble Style",
+          "description": "Default style for speech bubbles (round, square, cloud, etc.)",
+          "default": "round",
+          "examples": [
+            "round",
+            "square",
+            "cloud",
+            "think"
+          ]
+        },
+        "bubble_width": {
+          "type": "integer",
+          "title": "Bubble Width",
+          "description": "Default width for speech bubbles in characters",
+          "default": 40,
+          "minimum": 10,
+          "maximum": 200
+        },
+        "qr_charset": {
+          "type": "string",
+          "title": "QR Code Charset",
+          "description": "Character set for QR code output (blocks, ascii, etc.)",
+          "default": "blocks",
+          "examples": [
+            "blocks",
+            "ascii"
+          ]
+        },
+        "pattern_border": {
+          "type": "string",
+          "title": "Pattern Border",
+          "description": "Default border style for patterns (single, double, etc.)",
+          "default": "single",
+          "examples": [
+            "single",
+            "double"
+          ]
+        },
+        "pattern_divider": {
+          "type": "string",
+          "title": "Pattern Divider",
+          "description": "Default divider style for patterns (single, double, etc.)",
+          "default": "single",
+          "examples": [
+            "single",
+            "double"
+          ]
+        },
+        "copy_to_clipboard": {
+          "type": "boolean",
+          "title": "Copy to Clipboard",
+          "description": "Whether to automatically copy output to clipboard",
+          "default": false
+        },
+        "json_output": {
+          "type": "boolean",
+          "title": "JSON Output",
+          "description": "Whether to output in JSON format by default",
+          "default": false
+        }
+      }
+    },
+    "presets": {
+      "type": "object",
+      "title": "Presets",
+      "description": "Named configuration presets for quick access",
+      "additionalProperties": {
+        "type": "object",
+        "title": "Preset",
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Display name for the preset"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Description of what this preset does"
+          },
+          "command": {
+            "type": "string",
+            "title": "Command",
+            "description": "The moji command this preset is for (banner, convert, art, etc.)"
+          },
+          "args": {
+            "type": "object",
+            "title": "Arguments",
+            "description": "Command arguments as key-value pairs",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "command"
+        ]
+      }
+    },
+    "art_paths": {
+      "type": "array",
+      "title": "Custom Art Paths",
+      "description": "Additional directories to search for ASCII art files",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        [
+          "/usr/local/share/moji/art",
+          "/home/user/.moji/art"
+        ]
+      ]
+    },
+    "font_paths": {
+      "type": "array",
+      "title": "Custom Font Paths",
+      "description": "Additional directories to search for font files",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        [
+          "/usr/local/share/fonts",
+          "/home/user/.moji/fonts"
+        ]
+      ]
+    },
+    "cowfile_paths": {
+      "type": "array",
+      "title": "Cowfile Paths",
+      "description": "Additional directories to search for cowfile art",
+      "items": {
+        "type": "string"
+      },
+      "examples": [
+        [
+          "/usr/local/share/cowsay/cows",
+          "/home/user/.moji/cows"
+        ]
+      ]
+    },
+    "aliases": {
+      "type": "object",
+      "title": "Command Aliases",
+      "description": "Custom aliases for frequently used commands",
+      "additionalProperties": {
+        "type": "string",
+        "title": "Alias Command",
+        "description": "The command this alias expands to"
+      },
+      "examples": [
+        {
+          "my-banner": "banner --font shadow --border bold"
+        }
+      ]
+    }
+  }
+}
