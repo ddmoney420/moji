@@ -1,0 +1,98 @@
+# CLAUDE.md - Moji Integration Example
+
+This is an example of how to integrate Moji into your project's CLAUDE.md file.
+
+---
+
+## Project: My Awesome App
+
+### Session Personality
+
+When starting a new session, greet with wisdom:
+
+```
+/moji flex --creature claude
+```
+
+### Celebrations
+
+When completing a major milestone:
+
+```
+/moji banner "SHIPPED"
+```
+
+When tests pass:
+
+```
+/moji say "All tests green!" --creature tux
+```
+
+### Documentation Style
+
+Use moji for README headers:
+
+```
+/moji header "Installation"
+/moji header "Usage"
+/moji header "API Reference"
+```
+
+Use dividers between sections:
+
+```
+/moji divider --style fancy
+```
+
+### Commit Messages
+
+Follow gitmoji convention:
+
+```
+/moji commit
+```
+
+Examples:
+- ✨ feat: add user authentication
+- 🐛 fix: resolve login redirect loop
+- 📝 docs: update API documentation
+- ♻️ refactor: simplify database queries
+- ✅ test: add integration tests for auth
+
+### Fortune Categories by Context
+
+- **Starting work:** `/moji fortune --category motivation`
+- **Debugging:** `/moji fortune --category tips`
+- **Code review:** `/moji fortune --category dev`
+- **Taking a break:** `/moji fortune --category zen`
+- **Friday deploys:** `/moji fortune --category absurd`
+
+---
+
+## Quick Reference
+
+```
+/moji banner <text>           ASCII art text
+/moji fortune                 Random wisdom
+/moji say <text>              Creature speech
+/moji emoji <search>          Find emojis
+/moji commit                  Gitmoji list
+/moji flex                    Fortune + creature
+/moji divider                 Section divider
+/moji box <text>              Boxed text
+/moji header <text>           File header
+/moji rainbow <text>          Colored text
+```
+
+---
+
+```
+ _______________________________________
+< Now go build something amazing! >
+ ---------------------------------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+```

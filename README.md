@@ -231,6 +231,25 @@ moji completions zsh >> ~/.zshrc
 moji completions fish > ~/.config/fish/completions/moji.fish
 ```
 
+## Claude Code Plugin
+
+Use moji directly in [Claude Code](https://docs.anthropic.com/claude-code) with the `/moji` slash command.
+
+**Install:**
+```bash
+claude --plugin-dir /path/to/moji/claude-code-plugin
+```
+
+**Usage:**
+```
+/moji banner "HELLO"
+/moji fortune
+/moji filter glitch "ERROR"
+/moji shrug
+```
+
+See [`claude-code-plugin/README.md`](claude-code-plugin/README.md) for full documentation.
+
 ## Diagnostics
 
 ```bash

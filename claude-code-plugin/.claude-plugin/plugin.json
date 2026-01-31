@@ -1,0 +1,24 @@
+{
+  "name": "moji",
+  "version": "1.0.0",
+  "description": "Claude Code plugin for the moji terminal art toolkit - kaomoji, ASCII banners, text effects, image conversion, and more",
+  "author": {
+    "name": "ddmoney420",
+    "url": "https://github.com/ddmoney420"
+  },
+  "license": "MIT",
+  "keywords": [
+    "ascii",
+    "art",
+    "banner",
+    "figlet",
+    "kaomoji",
+    "emoji",
+    "terminal",
+    "effects",
+    "qr",
+    "image-to-ascii"
+  ],
+  "repository": "https://github.com/ddmoney420/moji",
+  "homepage": "https://github.com/ddmoney420/moji#readme"
+}
