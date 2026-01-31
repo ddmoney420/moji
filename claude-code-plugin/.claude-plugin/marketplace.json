@@ -1,0 +1,19 @@
+{
+  "name": "moji-plugins",
+  "owner": {
+    "name": "ddmoney420",
+    "url": "https://github.com/ddmoney420"
+  },
+  "metadata": {
+    "description": "Moji terminal art toolkit plugins for Claude Code",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "moji",
+      "source": "./",
+      "description": "Terminal art toolkit - kaomoji, ASCII banners, text effects, and more",
+      "version": "1.0.0"
+    }
+  ]
+}
